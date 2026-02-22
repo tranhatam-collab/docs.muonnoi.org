@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="color-scheme" content="dark"/>
+  <meta name="theme-color" content="#0b0f14"/>
+
+  <title>Muonnoi Docs · Chuẩn vận hành Social Operating System</title>
+  <meta name="description" content="Tài liệu chuẩn vận hành Muonnoi: tư tưởng hệ, nguyên tắc chống thao túng, kiến trúc Cloudflare Pages/Workers/D1, module plan, API plan, schema, bảo mật."/>
+  <link rel="canonical" href="https://docs.muonnoi.org/"/>
+
+  <link rel="alternate" hreflang="vi" href="https://docs.muonnoi.org/"/>
+  <link rel="alternate" hreflang="en" href="https://docs.muonnoi.org/en/"/>
+  <link rel="alternate" hreflang="x-default" href="https://docs.muonnoi.org/"/>
+
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="Muonnoi"/>
+  <meta property="og:title" content="Muonnoi Docs · Chuẩn vận hành Social Operating System"/>
+  <meta property="og:description" content="Không feed gây nghiện. Không tracking. Chuẩn vận hành + kiến trúc + API plan."/>
+  <meta property="og:url" content="https://docs.muonnoi.org/"/>
+
+  <meta name="twitter:card" content="summary"/>
+  <meta name="twitter:title" content="Muonnoi Docs"/>
+  <meta name="twitter:description" content="Chuẩn vận hành + API plan + bảo mật."/>
+  <link rel="stylesheet" href="/assets/style.css"/>
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebSite",
+    "name":"Muonnoi Docs",
+    "url":"https://docs.muonnoi.org/",
+    "description":"Chuẩn vận hành Social Operating System của Muonnoi.",
+    "publisher":{"@type":"Organization","name":"Muonnoi"}
+  }
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="row">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <div class="brandTitle">docs.muonnoi.org</div>
+          <div class="brandSub">Chuẩn vận hành. Kiến trúc. API plan. Bảo mật.</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Điều hướng">
+        <a class="btn small ghost" href="/">Docs</a>
+        <a class="btn small ghost" href="/system/">Hệ thống</a>
+        <a class="btn small ghost" href="/api/">API plan</a>
+        <a class="btn small ghost" href="/legal/privacy.html">Pháp lý</a>
+      </nav>
+
+      <div class="right">
+        <div class="langWrap">
+          <span class="langLabel">LANG</span>
+          <select class="lang" id="langSelect" aria-label="Chọn ngôn ngữ">
+            <option value="/" selected>VI</option>
+            <option value="/en/">EN</option>
+            <option value="/fr/">FR</option>
+            <option value="/ja/">JA</option>
+          </select>
+          <span class="chev" aria-hidden="true"></span>
+        </div>
+
+        <a class="btn small" href="https://www.muonnoi.org/">Landing</a>
+        <a class="btn small primary" href="https://app.muonnoi.org/">App</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <section class="card">
+        <div class="pad">
+          <span class="tag">Docs</span>
+          <h1>Chuẩn Vận Hành Muonnoi</h1>
+          <div class="muted">
+            Muonnoi không phải mạng xã hội. Đây là hệ điều hành xã hội số để con người làm việc, kiếm tiền, giao dịch, học tập, xuất bản, nhắn tin và thanh toán mà không bị theo dõi, không bị thao túng, không bị khai thác dữ liệu.
+          </div>
+        </div>
+
+        <div class="pad panel">
+          <h2>Route map hệ sinh thái</h2>
+          <div class="list">
+            <div class="item">
+              <div class="itemTop">
+                <div class="badge ok">www.muonnoi.org</div>
+                <div class="badge">Landing · SEO · Tư tưởng</div>
+              </div>
+              <div class="itemBody">Giải thích hệ thống, tuyên bố bảo mật, điều hướng sang app và docs, tài liệu pháp lý.</div>
+            </div>
+
+            <div class="item">
+              <div class="itemTop">
+                <div class="badge ok">app.muonnoi.org</div>
+                <div class="badge">Ứng dụng vận hành</div>
+              </div>
+              <div class="itemBody">SPA routing sạch, link bền: /p/:id, /u/:handle, /v/:id, /m/:id. No external libs. CSP strict.</div>
+            </div>
+
+            <div class="item">
+              <div class="itemTop">
+                <div class="badge ok">docs.muonnoi.org</div>
+                <div class="badge">Chuẩn vận hành + API plan</div>
+              </div>
+              <div class="itemBody">Quy tắc hệ thống, kiến trúc, module plan, schema và lộ trình backend.</div>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <h2>Đi thẳng vào tài liệu</h2>
+          <div class="list">
+            <div class="item">
+              <div class="itemTop">
+                <div class="badge">Hệ thống</div>
+                <a class="btn small primary" href="/system/">Mở</a>
+              </div>
+              <div class="itemBody">Nguyên tắc chống thao túng, kiến trúc vận hành, module, roadmap.</div>
+            </div>
+            <div class="item">
+              <div class="itemTop">
+                <div class="badge">API plan</div>
+                <a class="btn small primary" href="/api/">Mở</a>
+              </div>
+              <div class="itemBody">Endpoint proposal, schema D1, auth, security, error model.</div>
+            </div>
+            <div class="item">
+              <div class="itemTop">
+                <div class="badge">Pháp lý</div>
+                <a class="btn small" href="/legal/privacy.html">Privacy</a>
+              </div>
+              <div class="itemBody">Không tracking. Dữ liệu tối thiểu. Quyền kiểm soát thuộc về người dùng.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <div class="pad">
+          <span class="tag">Core stance</span>
+          <h2>Muonnoi không cạnh tranh bằng giải trí</h2>
+          <div class="muted">Muonnoi cạnh tranh bằng hạ tầng sống số tin cậy.</div>
+
+          <div class="hr"></div>
+
+          <div class="list">
+            <div class="item">
+              <div class="itemTop"><div class="badge ok">No tracking</div><div class="badge">Default</div></div>
+              <div class="itemBody">Không pixel, không SDK bên thứ ba, không analytics hành vi.</div>
+            </div>
+            <div class="item">
+              <div class="itemTop"><div class="badge ok">No addictive feed</div><div class="badge">Default</div></div>
+              <div class="itemBody">Không tối ưu nghiện, không tối ưu outrage.</div>
+            </div>
+            <div class="item">
+              <div class="itemTop"><div class="badge ok">Stable links</div><div class="badge">Required</div></div>
+              <div class="itemBody">Link không chết. Nội dung không mất vì thuật toán.</div>
+            </div>
+            <div class="item">
+              <div class="itemTop"><div class="badge ok">Clean revenue</div><div class="badge">Policy</div></div>
+              <div class="itemBody">Không quảng cáo hành vi. Doanh thu: phí giao dịch nhỏ, gói creator, gói doanh nghiệp, escrow, verified profile.</div>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+          <div class="muted mono">
+            Gợi ý triển khai: Cloudflare Pages cho docs. Không JS framework. Không CDN. Không libs.
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="footer">docs.muonnoi.org · Privacy-first · No tracking · Versioned documentation</div>
+  </main>
+
+  <script src="/assets/app.js"></script>
+</body>
+</html>
