@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#0b0f14" />
+  <title>Muonnoi Architecture · Domain, Routing, Data, Audit</title>
+  <meta name="description" content="Kiến trúc Muonnoi: phân lớp domain, routing link bền, dữ liệu tối thiểu, Worker + D1 khi bật, audit logs, security headers và triển khai Cloudflare Pages/Workers." />
+  <link rel="canonical" href="https://docs.muonnoi.org/system/architecture.html" />
+  <link rel="alternate" hreflang="vi" href="https://docs.muonnoi.org/system/architecture.html" />
+  <link rel="alternate" hreflang="en" href="https://docs.muonnoi.org/en/system/architecture.html" />
+  <link rel="alternate" hreflang="x-default" href="https://docs.muonnoi.org/system/architecture.html" />
+
+  <style>
+    :root{
+      --bg:#0b0f14;--panel:#0f1724;--panel2:#0b1220;
+      --text:#e9f0fb;--muted:#a6b4c6;
+      --line:rgba(255,255,255,.10);--line2:rgba(255,255,255,.16);
+      --accent:#7fe7c4;--accent2:#8ab4ff;--warn:#ffd08a;--danger:#ff8aa0;
+      --shadow:0 18px 80px rgba(0,0,0,.58);
+      --r:18px;--r2:22px;--max:1120px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#f7fafc;--panel:#ffffff;--panel2:#ffffff;
+        --text:#0b1320;--muted:#4c6177;
+        --line:rgba(2,6,23,.10);--line2:rgba(2,6,23,.18);
+        --shadow:0 18px 60px rgba(2,6,23,.10);
+      }
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background:
+        radial-gradient(900px 520px at 12% 10%, rgba(127,231,196,.12), transparent 62%),
+        radial-gradient(920px 520px at 90% 12%, rgba(138,180,255,.12), transparent 62%),
+        radial-gradient(840px 460px at 52% 96%, rgba(255,208,138,.08), transparent 60%),
+        var(--bg);
+      line-height:1.65;
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    button, input, select{font:inherit}
+
+    .wrap{max-width:var(--max);margin:0 auto;padding:18px}
+    .topbar{
+      position:sticky;top:0;z-index:50;
+      background:rgba(11,15,20,.74);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line);
+    }
+    @media (prefers-color-scheme: light){
+      .topbar{background:rgba(247,250,252,.82)}
+    }
+    .row{max-width:var(--max);margin:0 auto;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:10px;min-width:240px}
+    .logo{
+      width:38px;height:38px;border-radius:14px;
+      background:
+        radial-gradient(18px 18px at 30% 35%, rgba(127,231,196,.95), rgba(127,231,196,.10)),
+        radial-gradient(18px 18px at 70% 65%, rgba(138,180,255,.92), rgba(138,180,255,.08));
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
+      flex:0 0 auto;
+    }
+    .brandTitle{font-weight:900;letter-spacing:.2px}
+    .brandSub{color:var(--muted);font-size:12px}
+
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:10px 12px;border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--text);font-weight:820;letter-spacing:.2px;
+      cursor:pointer;user-select:none;white-space:nowrap;
+      transition: transform .15s ease, border-color .15s ease, background .15s ease;
+    }
+    .btn:hover{transform:translateY(-1px);border-color:var(--line2);background:rgba(255,255,255,.06)}
+    .btn.small{padding:8px 10px;font-size:13px}
+    .btn.primary{border-color:rgba(127,231,196,.46);background:rgba(127,231,196,.12)}
+    .btn.primary:hover{border-color:rgba(127,231,196,.72)}
+    .btn.ghost{background:transparent}
+
+    .langWrap{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+    }
+    .langLabel{font-family:var(--mono);font-size:12px;color:rgba(233,240,251,.80)}
+    select.lang{
+      appearance:none;border:0;outline:none;background:transparent;color:var(--text);
+      font-weight:900;cursor:pointer;padding:6px 28px 6px 8px;border-radius:999px;
+    }
+    .chev{
+      width:10px;height:10px;border-right:2px solid rgba(233,240,251,.7);border-bottom:2px solid rgba(233,240,251,.7);
+      transform:rotate(45deg);margin-left:-18px;pointer-events:none;
+    }
+    .card{
+      border:1px solid var(--line);
+      border-radius:var(--r2);
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    @media (prefers-color-scheme: light){
+      .card{background:linear-gradient(180deg, rgba(2,6,23,.02), rgba(2,6,23,.01))}
+    }
+    .pad{padding:16px}
+    .panel{
+      border-top:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(15,23,36,.55), rgba(11,18,32,.35));
+    }
+    @media (prefers-color-scheme: light){
+      .panel{background:linear-gradient(180deg, rgba(2,6,23,.02), rgba(2,6,23,.01))}
+    }
+
+    h1{margin:10px 0 8px;font-size:30px;letter-spacing:-.5px;line-height:1.15}
+    @media (max-width:520px){h1{font-size:26px}}
+    h2{margin:0 0 8px;font-size:18px;letter-spacing:-.2px}
+    h3{margin:0 0 8px;font-size:15px}
+    .muted{color:var(--muted)}
+    .mono{font-family:var(--mono)}
+    .hr{height:1px;background:var(--line);margin:14px 0}
+
+    .layout{display:grid;grid-template-columns:320px 1fr;gap:16px;align-items:start;margin-top:16px}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}}
+    .sidebar{position:sticky;top:72px}
+    @media (max-width:980px){.sidebar{position:relative;top:auto}}
+
+    .search{
+      display:flex;gap:10px;align-items:center;
+      border:1px solid var(--line);border-radius:999px;
+      background:rgba(0,0,0,.18);
+      padding:10px 12px;
+    }
+    @media (prefers-color-scheme: light){.search{background:rgba(2,6,23,.03)}}
+    .search input{width:100%;border:0;outline:none;background:transparent;color:var(--text);font-size:14px}
+    .searchIcon{
+      width:16px;height:16px;border:2px solid rgba(233,240,251,.55);border-radius:50%;position:relative;flex:0 0 auto;
+    }
+    @media (prefers-color-scheme: light){.searchIcon{border-color:rgba(2,6,23,.35)}}
+    .searchIcon:after{
+      content:"";position:absolute;width:8px;height:2px;background:rgba(233,240,251,.55);
+      right:-6px;bottom:-2px;transform:rotate(45deg);border-radius:99px;
+    }
+    @media (prefers-color-scheme: light){.searchIcon:after{background:rgba(2,6,23,.35)}}
+
+    .navList{display:grid;gap:8px;margin-top:12px}
+    .navBtn{
+      width:100%;justify-content:flex-start;border-radius:14px;
+      padding:10px 12px;font-weight:850;background:rgba(255,255,255,.03)
+    }
+    .navBtn .hint{margin-left:auto;font-family:var(--mono);font-size:12px;color:rgba(166,180,198,.85)}
+    .navBtn.active{border-color:rgba(138,180,255,.35);background:rgba(138,180,255,.10)}
+
+    .cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:980px){.cols{grid-template-columns:1fr}}
+    .item{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:rgba(0,0,0,.18);
+      padding:12px;
+    }
+    @media (prefers-color-scheme: light){.item{background:rgba(2,6,23,.03)}}
+    .itemTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;
+      font-family:var(--mono);font-size:12px;
+      padding:6px 8px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.04);
+      color:rgba(233,240,251,.86);
+      white-space:nowrap;
+    }
+    @media (prefers-color-scheme: light){.badge{color:rgba(2,6,23,.70)}}
+    .badge.ok{border-color:rgba(127,231,196,.28);background:rgba(127,231,196,.08)}
+    .badge.warn{border-color:rgba(255,208,138,.28);background:rgba(255,208,138,.08)}
+    .badge.danger{border-color:rgba(255,138,160,.28);background:rgba(255,138,160,.08)}
+    .itemTitle{font-weight:900;margin-top:8px}
+    .itemBody{color:var(--muted);font-size:13px;margin-top:6px}
+
+    .callout{
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+      border-radius:18px;padding:12px;
+    }
+    @media (prefers-color-scheme: light){.callout{background:rgba(2,6,23,.03)}}
+    .code{
+      font-family:var(--mono);font-size:12px;line-height:1.6;
+      background:rgba(0,0,0,.28);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:16px;
+      padding:12px;
+      overflow:auto;white-space:pre;
+      color:rgba(233,240,251,.92);
+    }
+    @media (prefers-color-scheme: light){.code{background:rgba(2,6,23,.04)}}
+
+    .footer{
+      margin:22px 0 10px;border-top:1px solid var(--line);
+      padding-top:14px;color:var(--muted);font-size:12px;text-align:center;font-family:var(--mono);
+    }
+
+    .toast{
+      position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+      background:rgba(15,23,36,.92);border:1px solid var(--line2);
+      border-radius:16px;box-shadow:var(--shadow);
+      padding:10px 12px;color:rgba(233,240,251,.92);
+      font-family:var(--mono);font-size:12px;z-index:120;
+      opacity:0;pointer-events:none;
+      transition:opacity .18s ease, transform .18s ease;
+      max-width:min(860px,92vw);
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(-2px)}
+  </style>
+</head>
+
+<body>
+  <header class="topbar" role="banner">
+    <div class="row">
+      <div class="brand" aria-label="Muonnoi Architecture">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <div class="brandTitle">Architecture</div>
+          <div class="brandSub">Domain. Routing. Data. Audit. Security.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+        <button class="btn small ghost" type="button" data-href="/">Docs</button>
+        <button class="btn small ghost" type="button" data-href="/system/">System</button>
+        <button class="btn small ghost" type="button" data-href="/system/method.html">Method</button>
+        <button class="btn small ghost" type="button" data-href="/system/api.html">API Plan</button>
+
+        <div class="langWrap" aria-label="Ngôn ngữ">
+          <span class="langLabel">LANG</span>
+          <select class="lang" id="langSelect" aria-label="Chọn ngôn ngữ">
+            <option value="/system/architecture.html" selected>VI</option>
+            <option value="/en/system/architecture.html">EN</option>
+            <option value="/fr/system/architecture.html">FR</option>
+            <option value="/ja/system/architecture.html">JA</option>
+            <option value="/ko/system/architecture.html">KO</option>
+            <option value="/zh/system/architecture.html">ZH</option>
+          </select>
+          <span class="chev" aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap" role="main">
+    <div class="card">
+      <div class="pad">
+        <h1>Kiến trúc Muonnoi.</h1>
+        <div class="muted">
+          Kiến trúc Muonnoi được thiết kế để bền, rõ, ít phụ thuộc, dễ audit. Mọi quyết định kiến trúc phải bảo vệ định hướng:
+          không tracking, không vòng lặp gây nghiện, link bền như tài sản số, và dữ liệu tối thiểu.
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="cols">
+          <div class="callout">
+            <strong>Triết lý kỹ thuật</strong>
+            <div class="muted">Giảm bề mặt tấn công. Giảm dữ liệu. Giảm phụ thuộc. Tăng khả năng kiểm chứng.</div>
+          </div>
+          <div class="callout">
+            <strong>Mô hình triển khai</strong>
+            <div class="muted">Cloudflare Pages cho frontend. Cloudflare Worker + D1 cho backend tối thiểu khi cần.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pad panel">
+        <div class="cols">
+          <div class="item" data-index>
+            <div class="itemTop">
+              <div class="badge ok">Stable links</div>
+              <div class="badge">Asset</div>
+            </div>
+            <div class="itemTitle">Link bền là tài sản</div>
+            <div class="itemBody">Đường dẫn không được sống nhờ thuật toán. Đường dẫn phải sống nhờ cấu trúc hệ thống.</div>
+          </div>
+
+          <div class="item" data-index>
+            <div class="itemTop">
+              <div class="badge ok">Audit</div>
+              <div class="badge">Governance</div>
+            </div>
+            <div class="itemTitle">Quản trị phải có dấu vết</div>
+            <div class="itemBody">Mọi hành động quản trị nhạy cảm đều phải có audit log. Không quyền lực mờ.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <aside class="sidebar card" aria-label="Mục lục">
+        <div class="pad">
+          <div class="search" role="search" aria-label="Tìm trong kiến trúc">
+            <span class="searchIcon" aria-hidden="true"></span>
+            <input id="search" type="search" placeholder="Tìm nhanh theo từ khóa…" autocomplete="off" />
+          </div>
+
+          <div class="navList" id="navList">
+            <button class="btn navBtn active" type="button" data-jump="#domains">Domain map <span class="hint">01</span></button>
+            <button class="btn navBtn" type="button" data-jump="#routing">Routing <span class="hint">02</span></button>
+            <button class="btn navBtn" type="button" data-jump="#frontend">Frontend <span class="hint">03</span></button>
+            <button class="btn navBtn" type="button" data-jump="#backend">Backend <span class="hint">04</span></button>
+            <button class="btn navBtn" type="button" data-jump="#data">Data model <span class="hint">05</span></button>
+            <button class="btn navBtn" type="button" data-jump="#audit">Audit <span class="hint">06</span></button>
+            <button class="btn navBtn" type="button" data-jump="#security">Security <span class="hint">07</span></button>
+            <button class="btn navBtn" type="button" data-jump="#abuse">Anti-abuse <span class="hint">08</span></button>
+            <button class="btn navBtn" type="button" data-jump="#deploy">Deploy <span class="hint">09</span></button>
+            <button class="btn navBtn" type="button" data-jump="#checklist">Checklist <span class="hint">10</span></button>
+          </div>
+
+          <div class="hr"></div>
+
+          <div class="callout">
+            <strong>Điều hướng nhanh</strong>
+            <div class="muted" style="margin-top:8px">Không hiện link thô. Link gắn trong nút.</div>
+            <div style="display:grid;gap:10px;margin-top:10px">
+              <button class="btn small" type="button" data-href="/legal/privacy.html">Privacy</button>
+              <button class="btn small" type="button" data-href="/legal/terms.html">Terms</button>
+              <button class="btn small" type="button" data-href="/system/api.html">API Plan</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="card">
+        <div class="pad">
+
+          <section id="domains" data-index>
+            <h2>1) Domain map</h2>
+            <div class="muted">
+              Tách rõ “định vị” và “vận hành” để tránh làm loãng định hướng, và để bảo mật dễ kiểm soát hơn.
+            </div>
+            <div class="hr"></div>
+
+            <div class="cols">
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge">www.muonnoi.org</div><div class="badge ok">Landing</div></div>
+                <div class="itemTitle">Định vị + SEO + Legal</div>
+                <div class="itemBody">Giải thích hệ thống, tuyên bố bảo mật, điều hướng sang app + docs, trang pháp lý. Không tracking.</div>
+              </div>
+
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge">app.muonnoi.org</div><div class="badge ok">SPA</div></div>
+                <div class="itemTitle">Ứng dụng vận hành</div>
+                <div class="itemBody">History routing sạch. Link bền. Module hóa theo lõi vận hành. Không thư viện ngoài.</div>
+              </div>
+
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge">docs.muonnoi.org</div><div class="badge ok">Docs</div></div>
+                <div class="itemTitle">Chuẩn vận hành + kỹ thuật</div>
+                <div class="itemBody">System docs, method, architecture, API plan, governance, legal. Dùng để khóa định hướng.</div>
+              </div>
+
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge">api.app.muonnoi.org</div><div class="badge warn">Worker</div></div>
+                <div class="itemTitle">Backend tối thiểu khi cần</div>
+                <div class="itemBody">Chỉ mở endpoint phục vụ lõi vận hành. D1 lưu tối thiểu. Có rate-limit và audit.</div>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <div class="code" aria-label="Sơ đồ domain">
+Domains
+- www.muonnoi.org      : Landing + SEO + Legal (no tracking)
+- app.muonnoi.org      : SPA operating app (stable links)
+- docs.muonnoi.org     : System docs + API plan + Governance
+- api.app.muonnoi.org  : Worker + D1 (enabled by phases)
+            </div>
+          </section>
+
+          <div class="hr"></div>
+
+          <section id="routing" data-index>
+            <h2>2) Routing</h2>
+            <div class="muted">
+              Routing phải “ít bất ngờ”, dễ nhớ, dễ chia sẻ, dễ lưu, dễ đối chiếu. Không dùng hash routing trong app.
+            </div>
+            <div class="hr"></div>
+
+            <div class="cols">
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">Profile</div><div class="badge">/u/:handle</div></div>
+                <div class="itemTitle">Hồ sơ theo handle</div>
+                <div class="itemBody">Handle là định danh hiển thị. Không phụ thuộc ID nội bộ khi chia sẻ.</div>
+              </div>
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">Project</div><div class="badge">/p/:id</div></div>
+                <div class="itemTitle">Dự án là đơn vị đóng góp</div>
+                <div class="itemBody">Reputation dựa dự án, kết quả và giao dịch, không dựa tương tác gây nghiện.</div>
+              </div>
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">Listing</div><div class="badge">/m/:id</div></div>
+                <div class="itemTitle">Commerce là tài sản link</div>
+                <div class="itemBody">Người bán sở hữu link. Không phụ thuộc reach. Trạng thái giao dịch rõ ràng.</div>
+              </div>
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">Media</div><div class="badge">/v/:id</div></div>
+                <div class="itemTitle">Learn/Media không có vòng lặp gây nghiện</div>
+                <div class="itemBody">Không autoplay câu kéo. Không feed vô hạn. Nội dung sống nhờ chất lượng và cấu trúc.</div>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <h3>SPA rewrite (app.muonnoi.org)</h3>
+            <div class="muted">Để refresh không 404 trên Pages, dùng _redirects (ở repo app).</div>
+            <div class="code">/*    /index.html   200</div>
+          </section>
+
+          <div class="hr"></div>
+
+          <section id="frontend" data-index>
+            <h2>3) Frontend</h2>
+            <div class="muted">
+              Mục tiêu: nhanh, ít phụ thuộc, dễ audit, không CDN, không trackers. UI tối giản nhưng sang, không “ồn”.
+            </div>
+            <div class="hr"></div>
+
+            <div class="cols">
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">No libs</div><div class="badge">Vanilla</div></div>
+                <div class="itemTitle">Không thư viện ngoài</div>
+                <div class="itemBody">Giảm bề mặt tấn công, giảm rủi ro supply-chain, tăng khả năng kiểm chứng.</div>
+              </div>
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">Bilingual</div><div class="badge">Files</div></div>
+                <div class="itemTitle">Đa ngôn ngữ theo file riêng</div>
+                <div class="itemBody">Docs/landing mỗi ngôn ngữ là folder riêng. App dùng i18n file (khi triển khai) hoặc folder riêng tùy kiến trúc.</div>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <h3>Nguyên tắc UI chống nghiện</h3>
+            <div class="code">- Không feed vô hạn
+- Không autoplay
+- Không nút kích thích tương tác bằng dopamine
+- Không hệ thống “đề xuất” tối ưu outrage
+- Ưu tiên công việc, dự án, kết quả, giao dịch</div>
+          </section>
+
+          <div class="hr"></div>
+
+          <section id="backend" data-index>
+            <h2>4) Backend</h2>
+            <div class="muted">
+              Backend chỉ mở khi có nhu cầu vận hành thật. Mọi endpoint phải có lý do, giới hạn dữ liệu, và chống lạm dụng.
+            </div>
+            <div class="hr"></div>
+
+            <div class="cols">
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">Worker</div><div class="badge">API</div></div>
+                <div class="itemTitle">Cloudflare Worker</div>
+                <div class="itemBody">Stateless, nhanh, gần người dùng. CORS chỉ cho origin hợp lệ. Rate limit bắt buộc.</div>
+              </div>
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">D1</div><div class="badge">Minimal</div></div>
+                <div class="itemTitle">D1 lưu dữ liệu tối thiểu</div>
+                <div class="itemBody">Không lưu hành vi. Không lưu analytics. Lưu dữ liệu vận hành và audit khi cần.</div>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <h3>Auth tối giản (gợi ý)</h3>
+            <div class="muted">
+              Ưu tiên magic email hoặc passphrase cho giai đoạn đầu. Khi mở rộng mới tính khóa/rotation/2FA.
+            </div>
+            <div class="code">Auth phases
+- Phase 1: Magic email OR owner bootstrap + session token
+- Phase 2: Token rotation + device sessions + revoke
+- Phase 3: Optional stronger auth (2FA), encrypted messaging key mgmt</div>
+          </section>
+
+          <div class="hr"></div>
+
+          <section id="data" data-index>
+            <h2>5) Data model</h2>
+            <div class="muted">
+              Dữ liệu chia 3 lớp: Public tối thiểu, Private thuộc người dùng, Proof dùng hash/receipt để kiểm chứng mà không cần lộ nội dung.
+            </div>
+            <div class="hr"></div>
+
+            <div class="cols">
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">Public</div><div class="badge">Minimal</div></div>
+                <div class="itemTitle">Hiển thị đủ để hợp tác</div>
+                <div class="itemBody">Tên hiển thị, headline, mô tả ngắn, link dự án. Không bắt buộc thu thập quá mức.</div>
+              </div>
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">Proof</div><div class="badge">Hash</div></div>
+                <div class="itemTitle">Bằng chứng không cần lộ nội dung</div>
+                <div class="itemBody">Receipt hash dùng để verify. Nội dung chỉ public khi người dùng chọn.</div>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <h3>Schema tham chiếu (giai đoạn 1–2)</h3>
+            <div class="code">users(
+  id TEXT PRIMARY KEY,
+  handle TEXT UNIQUE NOT NULL,
+  display_name TEXT NOT NULL,
+  headline TEXT,
+  bio TEXT,
+  created_at INTEGER NOT NULL
+)
+
+projects(
+  id TEXT PRIMARY KEY,
+  owner_id TEXT NOT NULL,
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  status TEXT NOT NULL,          -- draft|active|archived
+  created_at INTEGER NOT NULL
+)
+
+listings(
+  id TEXT PRIMARY KEY,
+  owner_id TEXT NOT NULL,
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  status TEXT NOT NULL,          -- pending|active|sold|archived
+  created_at INTEGER NOT NULL
+)
+
+media(
+  id TEXT PRIMARY KEY,
+  owner_id TEXT NOT NULL,
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  status TEXT NOT NULL,          -- draft|published|archived
+  created_at INTEGER NOT NULL
+)</div>
+          </section>
+
+          <div class="hr"></div>
+
+          <section id="audit" data-index>
+            <h2>6) Audit</h2>
+            <div class="muted">
+              Audit không phải để “kiểm soát con người”. Audit để ngăn quyền lực mờ, ngăn thao túng, và bảo vệ vận hành.
+            </div>
+            <div class="hr"></div>
+
+            <div class="cols">
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">Admin</div><div class="badge">Actions</div></div>
+                <div class="itemTitle">Mọi hành động nhạy cảm đều phải log</div>
+                <div class="itemBody">Approve/reject, ban/unban, change status, export… tất cả phải có dấu vết.</div>
+              </div>
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">Export</div><div class="badge">Evidence</div></div>
+                <div class="itemTitle">Audit phải export được</div>
+                <div class="itemBody">Minh bạch và đối chiếu được. Không audit “chỉ để đó”.</div>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <h3>Schema audit</h3>
+            <div class="code">audit(
+  id TEXT PRIMARY KEY,
+  actor TEXT NOT NULL,           -- admin_id or system
+  action TEXT NOT NULL,          -- e.g. "listing.approve"
+  meta TEXT,                     -- JSON string (safe)
+  created_at INTEGER NOT NULL
+)</div>
+
+            <div class="callout" style="margin-top:12px">
+              <strong>Không lưu meta nhạy cảm</strong>
+              <div class="muted" style="margin-top:8px">Meta chỉ đủ để đối chiếu, không chứa dữ liệu riêng tư. Nếu cần, dùng hash.</div>
+            </div>
+          </section>
+
+          <div class="hr"></div>
+
+          <section id="security" data-index>
+            <h2>7) Security</h2>
+            <div class="muted">
+              Bảo mật là “mặc định”. Không phải tính năng bổ sung. Ưu tiên giảm bề mặt tấn công và giảm phụ thuộc.
+            </div>
+            <div class="hr"></div>
+
+            <div class="cols">
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">CSP</div><div class="badge">Strict</div></div>
+                <div class="itemTitle">Content Security Policy</div>
+                <div class="itemBody">Chặn script lạ, chặn frame, giới hạn connect. Không chạy code ngoài kiểm soát.</div>
+              </div>
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">Headers</div><div class="badge">Default</div></div>
+                <div class="itemTitle">Security headers</div>
+                <div class="itemBody">DENY frame, nosniff, no-referrer, permissions-policy. COOP/CORP khi phù hợp.</div>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <h3>_headers mẫu (docs)</h3>
+            <div class="code">/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: no-referrer
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; form-action 'self';</div>
+
+            <div class="callout" style="margin-top:12px">
+              <strong>Gợi ý siết CSP</strong>
+              <div class="muted" style="margin-top:8px">
+                Khi tách JS ra file riêng, bạn bỏ 'unsafe-inline' ở script-src và dùng script file hash/nonce nếu cần.
+              </div>
+            </div>
+          </section>
+
+          <div class="hr"></div>
+
+          <section id="abuse" data-index>
+            <h2>8) Anti-abuse</h2>
+            <div class="muted">
+              Nếu không chống lạm dụng từ đầu, hệ sẽ bị spam, thao túng, và cuối cùng sẽ buộc phải làm tracking. Muonnoi không đi con đường đó.
+            </div>
+            <div class="hr"></div>
+
+            <div class="cols">
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge warn">Rate limit</div><div class="badge">Mandatory</div></div>
+                <div class="itemTitle">Giới hạn tạo mới</div>
+                <div class="itemBody">Throttle hành vi tạo dự án, listing, message. Cooldown. Validation độ dài và nội dung.</div>
+              </div>
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge warn">Spam</div><div class="badge">Defense</div></div>
+                <div class="itemTitle">Chặn spam không cần tracking</div>
+                <div class="itemBody">Rule theo hành vi tức thời, không lưu lịch sử hành vi dài hạn. Có thể dùng challenge theo phiên.</div>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <div class="code">Anti-abuse baseline
+- Input validation + max length
+- Rate limit (IP + token)
+- Cooldown create operations
+- Audit suspicious actions
+- Avoid fingerprinting and long-term tracking</div>
+          </section>
+
+          <div class="hr"></div>
+
+          <section id="deploy" data-index>
+            <h2>9) Deploy</h2>
+            <div class="muted">
+              Docs chạy Pages FREE, không build. App chạy Pages FREE, có SPA rewrite. API chạy Worker, D1 bind theo môi trường.
+            </div>
+            <div class="hr"></div>
+
+            <div class="cols">
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">Pages</div><div class="badge">Docs</div></div>
+                <div class="itemTitle">docs.muonnoi.org</div>
+                <div class="itemBody">Framework none. Output public/. _headers bật sẵn. Không tracking.</div>
+              </div>
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">Pages</div><div class="badge">App</div></div>
+                <div class="itemTitle">app.muonnoi.org</div>
+                <div class="itemBody">SPA rewrite /* → /index.html 200. CSP strict. No external libs.</div>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <h3>Gợi ý cấu trúc repo docs</h3>
+            <div class="code">public/
+  system/
+    index.html
+    method.html
+    architecture.html
+    api.html
+    governance.html
+  legal/
+    privacy.html
+    terms.html
+  en/
+    system/
+      architecture.html
+  _headers
+  _redirects</div>
+          </section>
+
+          <div class="hr"></div>
+
+          <section id="checklist" data-index>
+            <h2>10) Checklist</h2>
+            <div class="muted">Trước khi merge/release, kiểm tra theo checklist này.</div>
+            <div class="hr"></div>
+
+            <div class="cols">
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">Privacy</div><div class="badge">Pass</div></div>
+                <div class="itemTitle">Không tracking</div>
+                <div class="itemBody">Không pixel, không third party SDK, không analytics hành vi.</div>
+              </div>
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">Anti-addiction</div><div class="badge">Pass</div></div>
+                <div class="itemTitle">Không feed gây nghiện</div>
+                <div class="itemBody">Không autoplay, không infinite scroll, không tối ưu outrage.</div>
+              </div>
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">Stable links</div><div class="badge">Pass</div></div>
+                <div class="itemTitle">Link bền</div>
+                <div class="itemBody">Routing chuẩn, refresh không 404, cấu trúc không phá vỡ.</div>
+              </div>
+              <div class="item" data-index>
+                <div class="itemTop"><div class="badge ok">Security</div><div class="badge">Pass</div></div>
+                <div class="itemTitle">CSP + headers</div>
+                <div class="itemBody">CSP đúng, frame denied, nosniff, referrer policy, permissions policy.</div>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <div class="callout">
+              <strong>Nguyên tắc cuối</strong>
+              <div class="muted" style="margin-top:8px">
+                Nếu một thay đổi buộc bạn phải tăng tracking, tăng phụ thuộc, hoặc tăng vòng lặp gây nghiện để “tăng engagement”, thì thay đổi đó sai định hướng.
+              </div>
+            </div>
+
+            <div class="footer">Muonnoi Architecture. Safe by default. Useful by design.</div>
+          </section>
+
+        </div>
+
+        <div class="pad panel">
+          <div class="footer">docs.muonnoi.org · Architecture · No tracking · Minimal dependencies</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (function(){
+      "use strict";
+
+      const $ = (s, el=document) => el.querySelector(s);
+      const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
+
+      function toast(msg){
+        const t = $("#toast");
+        if(!t) return;
+        t.textContent = msg;
+        t.classList.add("show");
+        clearTimeout(toast._tm);
+        toast._tm = setTimeout(()=>t.classList.remove("show"), 1700);
+      }
+
+      // Hidden link navigation
+      document.addEventListener("click", (e)=>{
+        const hrefBtn = e.target.closest("[data-href]");
+        if(hrefBtn){
+          e.preventDefault();
+          const to = hrefBtn.getAttribute("data-href");
+          if(to) window.location.assign(to);
+          return;
+        }
+        const jumpBtn = e.target.closest("[data-jump]");
+        if(jumpBtn){
+          e.preventDefault();
+          const sel = jumpBtn.getAttribute("data-jump");
+          const el = sel ? document.querySelector(sel) : null;
+          if(el){
+            el.scrollIntoView({behavior:"smooth", block:"start"});
+            $$(".navBtn").forEach(x=>x.classList.remove("active"));
+            jumpBtn.classList.add("active");
+            history.replaceState({}, "", sel);
+          }
+        }
+      });
+
+      // Language select -> folder/file per language
+      const langSelect = $("#langSelect");
+      if(langSelect){
+        langSelect.addEventListener("change", ()=>{
+          const v = langSelect.value;
+          if(v) window.location.assign(v);
+        });
+      }
+
+      // Active section on scroll
+      const sections = $$("section[id]");
+      const navButtons = $$(".navBtn");
+      const idToBtn = new Map(navButtons.map(b=>[ (b.getAttribute("data-jump")||"").replace("#",""), b ]));
+
+      let ticking = false;
+      function onScroll(){
+        if(ticking) return;
+        ticking = true;
+        requestAnimationFrame(()=>{
+          ticking = false;
+          let best = null;
+          for(const s of sections){
+            const r = s.getBoundingClientRect();
+            if(r.top <= 120 && r.bottom >= 120){ best = s.id; break; }
+          }
+          if(best && idToBtn.has(best)){
+            navButtons.forEach(x=>x.classList.remove("active"));
+            idToBtn.get(best).classList.add("active");
+          }
+        });
+      }
+      window.addEventListener("scroll", onScroll, {passive:true});
+      onScroll();
+
+      // Search: soft highlight (privacy-first, client-only)
+      const search = $("#search");
+      const indexed = $$("[data-index]");
+      const normalize = (s)=> (s||"").toLowerCase().trim();
+
+      if(search){
+        search.addEventListener("input", ()=>{
+          const q = normalize(search.value);
+          if(!q){
+            indexed.forEach(el=>{
+              el.style.outline = "";
+              el.style.outlineOffset = "";
+              el.style.opacity = "";
+              el.style.display = "";
+            });
+            return;
+          }
+          let hitCount = 0;
+          indexed.forEach(el=>{
+            const text = normalize(el.textContent);
+            const hit = text.includes(q);
+            if(hit){
+              hitCount++;
+              el.style.outline = "2px solid rgba(138,180,255,.22)";
+              el.style.outlineOffset = "4px";
+              el.style.opacity = "1";
+            }else{
+              el.style.outline = "";
+              el.style.outlineOffset = "";
+              el.style.opacity = ".45";
+            }
+          });
+          toast(hitCount ? ("Tìm thấy: " + hitCount + " mục") : "Không có kết quả");
+        });
+      }
+
+      // Deep link hash
+      if(location.hash){
+        const el = document.querySelector(location.hash);
+        if(el) setTimeout(()=>el.scrollIntoView({behavior:"smooth", block:"start"}), 60);
+      }
+    })();
+  </script>
+</body>
+</html>
