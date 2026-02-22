@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>API Plan – Muonnoi</title>
+<link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+<main class="container">
+
+<h1>API Plan</h1>
+
+<p>
+API của Muonnoi chỉ mở khi có nhu cầu vận hành thực.
+Không mở bề mặt tấn công dư thừa.
+</p>
+
+<h2>Nguyên tắc</h2>
+
+<ul>
+<li>Rate limit</li>
+<li>JWT minimal</li>
+<li>Không trả stack trace</li>
+<li>Response model ổn định</li>
+</ul>
+
+<h2>Response Model</h2>
+
+<pre>
+{
+  "ok": true,
+  "data": {},
+  "meta": { "request_id": "" }
+}
+</pre>
+
+</main>
+</body>
+</html>
