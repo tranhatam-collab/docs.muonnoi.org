@@ -4,4 +4,4 @@
 /legal   /legal/    301
 
 # Optional: if you later add SPA inside docs, you can rewrite:
-# /*  /index.html  200
+# không rewrite global
