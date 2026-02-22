@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://docs.muonnoi.org/</loc></url>
+  <url><loc>https://docs.muonnoi.org/system/</loc></url>
+  <url><loc>https://docs.muonnoi.org/system/principles.html</loc></url>
+  <url><loc>https://docs.muonnoi.org/system/architecture.html</loc></url>
+  <url><loc>https://docs.muonnoi.org/system/modules.html</loc></url>
+  <url><loc>https://docs.muonnoi.org/system/roadmap.html</loc></url>
+  <url><loc>https://docs.muonnoi.org/api/</loc></url>
+  <url><loc>https://docs.muonnoi.org/api/endpoints.html</loc></url>
+  <url><loc>https://docs.muonnoi.org/api/schema.html</loc></url>
+  <url><loc>https://docs.muonnoi.org/api/auth.html</loc></url>
+  <url><loc>https://docs.muonnoi.org/api/security.html</loc></url>
+  <url><loc>https://docs.muonnoi.org/api/errors.html</loc></url>
+  <url><loc>https://docs.muonnoi.org/api/changelog.html</loc></url>
+  <url><loc>https://docs.muonnoi.org/legal/privacy.html</loc></url>
+  <url><loc>https://docs.muonnoi.org/legal/terms.html</loc></url>
+</urlset>
