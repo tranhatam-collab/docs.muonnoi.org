@@ -1,0 +1,7 @@
+# Allow clean trailing slash behaviors
+/docs    /system/   301
+/api     /api/      301
+/legal   /legal/    301
+
+# Optional: if you later add SPA inside docs, you can rewrite:
+# /*  /index.html  200
