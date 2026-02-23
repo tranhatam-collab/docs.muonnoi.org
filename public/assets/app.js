@@ -49,5 +49,18 @@
       setTimeout(()=>c.textContent="Copy", 1000);
     }
   });
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("pre").forEach(block => {
+    const btn = document.createElement("span");
+    btn.textContent = "Copy";
+    btn.className = "copy-btn";
+    block.prepend(btn);
 
+    btn.addEventListener("click", () => {
+      navigator.clipboard.writeText(block.innerText);
+      btn.textContent = "Copied";
+      setTimeout(() => btn.textContent = "Copy", 1500);
+    });
+  });
+});
 })();
