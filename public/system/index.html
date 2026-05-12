@@ -6,7 +6,7 @@
   <meta name="color-scheme" content="dark light" />
   <meta name="theme-color" content="#0b0f14" />
 
-  <title>Muonnoi System Docs · Hệ điều hành xã hội số</title>
+  <title>Muonnoi System Docs , Hệ điều hành xã hội số</title>
   <meta name="description" content="Tài liệu hệ thống Muonnoi: định vị, nguyên tắc bắt buộc, kiến trúc domain, chuẩn link bền, module lõi, dữ liệu tối thiểu, bảo mật nền và API plan theo giai đoạn." />
   <link rel="canonical" href="https://docs.muonnoi.org/system/" />
 
@@ -16,7 +16,7 @@
 
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Muonnoi" />
-  <meta property="og:title" content="Muonnoi System Docs · Hệ điều hành xã hội số" />
+  <meta property="og:title" content="Muonnoi System Docs , Hệ điều hành xã hội số" />
   <meta property="og:description" content="Định vị, nguyên tắc, kiến trúc, chuẩn link bền, module lõi, dữ liệu tối thiểu, bảo mật nền và API plan." />
   <meta property="og:url" content="https://docs.muonnoi.org/system/" />
   <meta name="twitter:card" content="summary" />
@@ -400,6 +400,7 @@
       transform: translateX(-50%) translateY(-2px);
     }
   </style>
+  <meta property="og:image" content="https://muonnoi.org/assets/brand/mn.svg" />
 </head>
 
 <body>
@@ -425,12 +426,12 @@
         <div class="langWrap" aria-label="Ngôn ngữ">
           <span class="langLabel">LANG</span>
           <select class="lang" id="langSelect" aria-label="Chọn ngôn ngữ">
-            <option value="/system/" selected>VI</option>
-            <option value="/en/system/">EN</option>
-            <option value="/fr/system/">FR</option>
-            <option value="/ja/system/">JA</option>
-            <option value="/ko/system/">KO</option>
-            <option value="/zh/system/">ZH</option>
+            <option value="/system/" selected>Tiếng Việt</option>
+            <option value="/en/system/">English</option>
+            <option value="/fr/system/">Français</option>
+            <option value="/ja/system/">日本語</option>
+            <option value="/ko/system/">한국어</option>
+            <option value="/zh/system/">中文</option>
           </select>
           <span class="chev" aria-hidden="true"></span>
         </div>
@@ -491,7 +492,7 @@
         <div class="pad">
           <div class="search" role="search" aria-label="Tìm trong tài liệu">
             <span class="searchIcon" aria-hidden="true"></span>
-            <input id="search" type="search" placeholder="Tìm nhanh theo từ khóa…" autocomplete="off" />
+            <input id="search" type="search" placeholder="Tìm nhanh theo từ khóa..." autocomplete="off" />
           </div>
 
           <div class="navList" id="navList">
@@ -531,7 +532,7 @@
             <h2>1) Tổng quan</h2>
             <div class="muted">
               Muonnoi được thiết kế như một hệ vận hành thay vì một nền tảng giải trí.
-              Trục sản phẩm không phải là “thời gian người dùng ở lại”, mà là “giá trị thật được tạo ra” và “tài sản số bền”.
+              Trục sản phẩm không phải là 'thời gian người dùng ở lại', mà là 'giá trị thật được tạo ra' và 'tài sản số bền'.
             </div>
 
             <div class="hr"></div>
@@ -580,7 +581,7 @@
 
           <section id="principles" data-index>
             <h2>3) Nguyên tắc bắt buộc</h2>
-            <div class="muted">Đây là “luật hệ” khi viết nội dung, viết code và triển khai sản phẩm.</div>
+            <div class="muted">Đây là 'luật hệ' khi viết nội dung, viết code và triển khai sản phẩm.</div>
 
             <div class="hr"></div>
 
@@ -591,7 +592,7 @@
                   <div class="badge">Default</div>
                 </div>
                 <div class="itemTitle">Không tracking, không analytics, không quảng cáo hành vi</div>
-                <div class="itemBody">Không pixel. Không third-party SDK. Không “thu thập để sau này dùng”. Chỉ giữ dữ liệu tối thiểu cần cho vận hành.</div>
+                <div class="itemBody">Không pixel. Không third-party SDK. Không 'thu thập để sau này dùng'. Chỉ giữ dữ liệu tối thiểu cần cho vận hành.</div>
               </div>
 
               <div class="item" data-index>
@@ -627,7 +628,7 @@
 
           <section id="domains" data-index>
             <h2>4) Kiến trúc domain</h2>
-            <div class="muted">Tách rõ “định vị” và “vận hành”. Mỗi domain có nhiệm vụ riêng.</div>
+            <div class="muted">Tách rõ 'định vị' và 'vận hành'. Mỗi domain có nhiệm vụ riêng.</div>
 
             <div class="hr"></div>
 
@@ -665,7 +666,7 @@
                   <div class="badge warn">Worker</div>
                 </div>
                 <div class="itemTitle">Backend tối thiểu khi thật cần</div>
-                <div class="itemBody">Cloudflare Worker + D1. Chỉ mở những endpoint cần cho vận hành. Không mở “everything API”.</div>
+                <div class="itemBody">Cloudflare Worker + D1. Chỉ mở những endpoint cần cho vận hành. Không mở 'everything API'.</div>
               </div>
             </div>
 
@@ -722,7 +723,7 @@ Domains
                   <div class="badge">/m/:id</div>
                 </div>
                 <div class="itemTitle">Listing theo ID bền</div>
-                <div class="itemBody">Người bán sở hữu link. Không bị phụ thuộc “reach”.</div>
+                <div class="itemBody">Người bán sở hữu link. Không bị phụ thuộc 'reach'.</div>
               </div>
             </div>
 
@@ -749,7 +750,7 @@ Domains
                   <div class="badge ok">Module 1</div>
                   <div class="badge">Work</div>
                 </div>
-                <div class="itemTitle">Hồ sơ năng lực · Dự án · Hợp tác · Tuyển dụng</div>
+                <div class="itemTitle">Hồ sơ năng lực , Dự án , Hợp tác , Tuyển dụng</div>
                 <div class="itemBody">Thay thế một phần LinkedIn + Slack nhẹ. Reputation dựa trên đóng góp và kết quả, không dựa like.</div>
               </div>
 
@@ -758,16 +759,16 @@ Domains
                   <div class="badge ok">Module 2</div>
                   <div class="badge">Commerce</div>
                 </div>
-                <div class="itemTitle">Listing · Đơn hàng · Giao dịch minh bạch</div>
+                <div class="itemTitle">Listing , Đơn hàng , Giao dịch minh bạch</div>
                 <div class="itemBody">Thay thế Marketplace + Gumroad nhẹ. Link thuộc về người bán. Chuẩn bị escrow lộ trình.</div>
               </div>
 
               <div class="item" data-index>
                 <div class="itemTop">
                   <div class="badge ok">Module 3</div>
-                  <div class="badge">Media · Learn</div>
+                  <div class="badge">Media , Learn</div>
                 </div>
-                <div class="itemTitle">Video · Tài liệu · Khóa học</div>
+                <div class="itemTitle">Video , Tài liệu , Khóa học</div>
                 <div class="itemBody">Thay YouTube nhẹ + Notion publishing. Không algorithm gây nghiện. Không bóp reach.</div>
               </div>
 
@@ -776,7 +777,7 @@ Domains
                   <div class="badge ok">Module 4</div>
                   <div class="badge">Communication</div>
                 </div>
-                <div class="itemTitle">Nhắn tin · Nhóm · Phòng đối thoại</div>
+                <div class="itemTitle">Nhắn tin , Nhóm , Phòng đối thoại</div>
                 <div class="itemBody">Hướng tới E2E encryption. Metadata tối thiểu theo nhu cầu vận hành, không thu thập để bán.</div>
               </div>
 
@@ -785,7 +786,7 @@ Domains
                   <div class="badge ok">Module 5</div>
                   <div class="badge">Payments</div>
                 </div>
-                <div class="itemTitle">Thanh toán · Biên nhận · Bằng chứng</div>
+                <div class="itemTitle">Thanh toán , Biên nhận , Bằng chứng</div>
                 <div class="itemBody">Receipt hash, verifiable credentials, decentralized-ready nhưng không hype. Mục tiêu là tin cậy.</div>
               </div>
 
@@ -806,7 +807,7 @@ Domains
             <h2>7) Dữ liệu tối thiểu</h2>
             <div class="muted">
               Mục tiêu: chỉ giữ dữ liệu đủ để vận hành, và có thể xóa hoặc giảm dữ liệu khi cần.
-              Không giữ “lịch sử hành vi” để suy luận tâm lý hay tối ưu gây nghiện.
+              Không giữ 'lịch sử hành vi' để suy luận tâm lý hay tối ưu gây nghiện.
             </div>
 
             <div class="hr"></div>
@@ -814,7 +815,7 @@ Domains
             <div class="cols">
               <div class="item" data-index>
                 <div class="itemTop"><div class="badge ok">Nguyên tắc</div><div class="badge">3 lớp</div></div>
-                <div class="itemTitle">Public · Private · Proof</div>
+                <div class="itemTitle">Public , Private , Proof</div>
                 <div class="itemBody">Public: tối thiểu. Private: thuộc về người dùng. Proof: hash/receipt để đối chiếu tin cậy, không cần lộ nội dung.</div>
               </div>
 
@@ -827,7 +828,7 @@ Domains
 
             <div class="hr"></div>
 
-            <h3>Schema nền tảng (gợi ý giai đoạn 1–2)</h3>
+            <h3>Schema nền tảng (gợi ý giai đoạn 1-2)</h3>
             <div class="code">-- Users (minimal)
 users(
   id TEXT PRIMARY KEY,
@@ -942,7 +943,7 @@ audit(
             <h2>9) API plan</h2>
             <div class="muted">
               API chỉ mở khi thật cần. Mỗi endpoint phải có lý do vận hành, giới hạn dữ liệu, và cơ chế chống lạm dụng.
-              Không có “API cho mọi thứ” từ ngày đầu.
+              Không có 'API cho mọi thứ' từ ngày đầu.
             </div>
 
             <div class="hr"></div>
@@ -987,7 +988,7 @@ audit(
       <div class="badge warn">Không làm</div>
       <div class="badge">Anti-goals</div>
     </div>
-    <div class="itemTitle">Không “API cho mọi thứ” từ ngày đầu</div>
+    <div class="itemTitle">Không 'API cho mọi thứ' từ ngày đầu</div>
     <div class="itemBody">
       Không mở bề mặt tấn công rộng rồi vá sau. Endpoint nào không phục vụ vận hành lõi thì chưa tồn tại. Muonnoi ưu tiên bền, rõ, và kiểm chứng được.
     </div>
@@ -1011,9 +1012,9 @@ Error:
 
 <div class="hr"></div>
 
-<h3>Draft endpoints (tham chiếu giai đoạn 1–2)</h3>
+<h3>Draft endpoints (tham chiếu giai đoạn 1-2)</h3>
 <div class="muted">
-  Đây là “khung” để docs thống nhất từ đầu. Bạn có thể giữ nguyên đường dẫn này, và triển khai Worker sau. Khi backend chưa có, trang này vẫn đúng hướng và không mơ hồ.
+  Đây là 'khung' để docs thống nhất từ đầu. Bạn có thể giữ nguyên đường dẫn này, và triển khai Worker sau. Khi backend chưa có, trang này vẫn đúng hướng và không mơ hồ.
 </div>
 
 <div class="code" aria-label="API endpoints draft">
@@ -1044,7 +1045,7 @@ GET  /admin/audit         -> { ok, data:{ entries:[...] } }
 <div class="callout">
   <strong>Chống lạm dụng (bắt buộc khi mở API)</strong>
   <div class="muted" style="margin-top:8px">
-    Rate limit theo IP và token. Cooldown cho hành vi tạo mới. Validation chặt. CORS chỉ cho origin hợp lệ. Không trả lỗi “giàu thông tin” cho kẻ tấn công.
+    Rate limit theo IP và token. Cooldown cho hành vi tạo mới. Validation chặt. CORS chỉ cho origin hợp lệ. Không trả lỗi 'giàu thông tin' cho kẻ tấn công.
   </div>
 </div>
 
@@ -1098,7 +1099,7 @@ public/
       <div class="itemTop"><div class="badge ok">Multi-language</div><div class="badge">Files</div></div>
       <div class="itemTitle">Mỗi ngôn ngữ là một file riêng</div>
       <div class="itemBody">
-        Dropdown điều hướng sang /en/… /fr/… /ja/… Khi nội dung sẵn, không cần sửa logic, hệ tự chạy theo đường dẫn.
+        Dropdown điều hướng sang /en/... /fr/... /ja/... Khi nội dung sẵn, không cần sửa logic, hệ tự chạy theo đường dẫn.
       </div>
     </div>
   </div>
@@ -1127,7 +1128,7 @@ public/
       <div class="itemTop"><div class="badge ok">Audit</div><div class="badge">Mandatory</div></div>
       <div class="itemTitle">Minh bạch hành động quản trị</div>
       <div class="itemBody">
-        Approve hoặc reject đều phải có log. Export được. Không có quyền lực mờ. Không có thao tác “ẩn”.
+        Approve hoặc reject đều phải có log. Export được. Không có quyền lực mờ. Không có thao tác 'ẩn'.
       </div>
     </div>
 
@@ -1135,7 +1136,7 @@ public/
       <div class="itemTop"><div class="badge warn">Anti-manipulation</div><div class="badge">Rule</div></div>
       <div class="itemTitle">Không xây cơ chế gây nghiện</div>
       <div class="itemBody">
-        Không feed vô hạn. Không hệ thống like để thao túng. Không “đề xuất” tối ưu cảm xúc. Muonnoi bảo vệ năng suất và sự tỉnh táo.
+        Không feed vô hạn. Không hệ thống like để thao túng. Không 'đề xuất' tối ưu cảm xúc. Muonnoi bảo vệ năng suất và sự tỉnh táo.
       </div>
     </div>
 
@@ -1143,7 +1144,7 @@ public/
       <div class="itemTop"><div class="badge ok">Safe defaults</div><div class="badge">Privacy</div></div>
       <div class="itemTitle">Mặc định an toàn</div>
       <div class="itemBody">
-        Chọn mặc định nghiêm. Chỉ nới lỏng khi có lý do vận hành và có văn bản minh bạch. Mọi thứ đều hướng tới “dữ liệu tối thiểu”.
+        Chọn mặc định nghiêm. Chỉ nới lỏng khi có lý do vận hành và có văn bản minh bạch. Mọi thứ đều hướng tới 'dữ liệu tối thiểu'.
       </div>
     </div>
 
@@ -1159,7 +1160,7 @@ public/
   <div class="hr"></div>
 
   <div class="callout">
-    <strong>System Docs là “khung kỷ luật”</strong>
+    <strong>System Docs là 'khung kỷ luật'</strong>
     <div class="muted" style="margin-top:8px">
       Mọi thứ về sau có thể phát triển. Nhưng nếu phá các nguyên tắc nền, Muonnoi sẽ trở thành thứ nó đang chống lại. Vì vậy, tài liệu này luôn là điểm tựa.
     </div>

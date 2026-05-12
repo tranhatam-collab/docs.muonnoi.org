@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="dark light" />
   <meta name="theme-color" content="#0b0f14" />
-  <title>Muonnoi Architecture · Domain, Routing, Data, Audit</title>
+  <title>Muonnoi Architecture , Domain, Routing, Data, Audit</title>
   <meta name="description" content="Kiến trúc Muonnoi: phân lớp domain, routing link bền, dữ liệu tối thiểu, Worker + D1 khi bật, audit logs, security headers và triển khai Cloudflare Pages/Workers." />
   <link rel="canonical" href="https://docs.muonnoi.org/system/architecture.html" />
   <link rel="alternate" hreflang="vi" href="https://docs.muonnoi.org/system/architecture.html" />
@@ -218,6 +218,12 @@
     }
     .toast.show{opacity:1;transform:translateX(-50%) translateY(-2px)}
   </style>
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Muonnoi Architecture , Domain, Routing, Data, Audit" />
+  <meta property="og:description" content="Kiến trúc Muonnoi: phân lớp domain, routing link bền, dữ liệu tối thiểu, Worker + D1 khi bật, audit logs, security headers và triển khai Cloudflare Pages/Workers." />
+  <meta property="og:url" content="https://docs.muonnoi.org/system/architecture.html" />
+  <meta property="og:image" content="https://muonnoi.org/assets/brand/mn.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
 </head>
 
 <body>
@@ -240,12 +246,12 @@
         <div class="langWrap" aria-label="Ngôn ngữ">
           <span class="langLabel">LANG</span>
           <select class="lang" id="langSelect" aria-label="Chọn ngôn ngữ">
-            <option value="/system/architecture.html" selected>VI</option>
-            <option value="/en/system/architecture.html">EN</option>
-            <option value="/fr/system/architecture.html">FR</option>
-            <option value="/ja/system/architecture.html">JA</option>
-            <option value="/ko/system/architecture.html">KO</option>
-            <option value="/zh/system/architecture.html">ZH</option>
+            <option value="/system/architecture.html" selected>Tiếng Việt</option>
+            <option value="/en/system/architecture.html">English</option>
+            <option value="/fr/system/architecture.html">Français</option>
+            <option value="/ja/system/architecture.html">日本語</option>
+            <option value="/ko/system/architecture.html">한국어</option>
+            <option value="/zh/system/architecture.html">中文</option>
           </select>
           <span class="chev" aria-hidden="true"></span>
         </div>
@@ -304,7 +310,7 @@
         <div class="pad">
           <div class="search" role="search" aria-label="Tìm trong kiến trúc">
             <span class="searchIcon" aria-hidden="true"></span>
-            <input id="search" type="search" placeholder="Tìm nhanh theo từ khóa…" autocomplete="off" />
+            <input id="search" type="search" placeholder="Tìm nhanh theo từ khóa..." autocomplete="off" />
           </div>
 
           <div class="navList" id="navList">
@@ -340,7 +346,7 @@
           <section id="domains" data-index>
             <h2>1) Domain map</h2>
             <div class="muted">
-              Tách rõ “định vị” và “vận hành” để tránh làm loãng định hướng, và để bảo mật dễ kiểm soát hơn.
+              Tách rõ 'định vị' và 'vận hành' để tránh làm loãng định hướng, và để bảo mật dễ kiểm soát hơn.
             </div>
             <div class="hr"></div>
 
@@ -386,7 +392,7 @@ Domains
           <section id="routing" data-index>
             <h2>2) Routing</h2>
             <div class="muted">
-              Routing phải “ít bất ngờ”, dễ nhớ, dễ chia sẻ, dễ lưu, dễ đối chiếu. Không dùng hash routing trong app.
+              Routing phải 'ít bất ngờ', dễ nhớ, dễ chia sẻ, dễ lưu, dễ đối chiếu. Không dùng hash routing trong app.
             </div>
             <div class="hr"></div>
 
@@ -425,7 +431,7 @@ Domains
           <section id="frontend" data-index>
             <h2>3) Frontend</h2>
             <div class="muted">
-              Mục tiêu: nhanh, ít phụ thuộc, dễ audit, không CDN, không trackers. UI tối giản nhưng sang, không “ồn”.
+              Mục tiêu: nhanh, ít phụ thuộc, dễ audit, không CDN, không trackers. UI tối giản nhưng sang, không 'ồn'.
             </div>
             <div class="hr"></div>
 
@@ -448,7 +454,7 @@ Domains
             <div class="code">- Không feed vô hạn
 - Không autoplay
 - Không nút kích thích tương tác bằng dopamine
-- Không hệ thống “đề xuất” tối ưu outrage
+- Không hệ thống 'đề xuất' tối ưu outrage
 - Ưu tiên công việc, dự án, kết quả, giao dịch</div>
           </section>
 
@@ -510,7 +516,7 @@ Domains
 
             <div class="hr"></div>
 
-            <h3>Schema tham chiếu (giai đoạn 1–2)</h3>
+            <h3>Schema tham chiếu (giai đoạn 1-2)</h3>
             <div class="code">users(
   id TEXT PRIMARY KEY,
   handle TEXT UNIQUE NOT NULL,
@@ -553,7 +559,7 @@ media(
           <section id="audit" data-index>
             <h2>6) Audit</h2>
             <div class="muted">
-              Audit không phải để “kiểm soát con người”. Audit để ngăn quyền lực mờ, ngăn thao túng, và bảo vệ vận hành.
+              Audit không phải để 'kiểm soát con người'. Audit để ngăn quyền lực mờ, ngăn thao túng, và bảo vệ vận hành.
             </div>
             <div class="hr"></div>
 
@@ -561,12 +567,12 @@ media(
               <div class="item" data-index>
                 <div class="itemTop"><div class="badge ok">Admin</div><div class="badge">Actions</div></div>
                 <div class="itemTitle">Mọi hành động nhạy cảm đều phải log</div>
-                <div class="itemBody">Approve/reject, ban/unban, change status, export… tất cả phải có dấu vết.</div>
+                <div class="itemBody">Approve/reject, ban/unban, change status, export... tất cả phải có dấu vết.</div>
               </div>
               <div class="item" data-index>
                 <div class="itemTop"><div class="badge ok">Export</div><div class="badge">Evidence</div></div>
                 <div class="itemTitle">Audit phải export được</div>
-                <div class="itemBody">Minh bạch và đối chiếu được. Không audit “chỉ để đó”.</div>
+                <div class="itemBody">Minh bạch và đối chiếu được. Không audit 'chỉ để đó'.</div>
               </div>
             </div>
 
@@ -592,7 +598,7 @@ media(
           <section id="security" data-index>
             <h2>7) Security</h2>
             <div class="muted">
-              Bảo mật là “mặc định”. Không phải tính năng bổ sung. Ưu tiên giảm bề mặt tấn công và giảm phụ thuộc.
+              Bảo mật là 'mặc định'. Không phải tính năng bổ sung. Ưu tiên giảm bề mặt tấn công và giảm phụ thuộc.
             </div>
             <div class="hr"></div>
 
@@ -677,7 +683,7 @@ media(
               <div class="item" data-index>
                 <div class="itemTop"><div class="badge ok">Pages</div><div class="badge">App</div></div>
                 <div class="itemTitle">app.muonnoi.org</div>
-                <div class="itemBody">SPA rewrite /* → /index.html 200. CSP strict. No external libs.</div>
+                <div class="itemBody">SPA rewrite /* to /index.html 200. CSP strict. No external libs.</div>
               </div>
             </div>
 
@@ -736,7 +742,7 @@ media(
             <div class="callout">
               <strong>Nguyên tắc cuối</strong>
               <div class="muted" style="margin-top:8px">
-                Nếu một thay đổi buộc bạn phải tăng tracking, tăng phụ thuộc, hoặc tăng vòng lặp gây nghiện để “tăng engagement”, thì thay đổi đó sai định hướng.
+                Nếu một thay đổi buộc bạn phải tăng tracking, tăng phụ thuộc, hoặc tăng vòng lặp gây nghiện để 'tăng engagement', thì thay đổi đó sai định hướng.
               </div>
             </div>
 
@@ -746,7 +752,7 @@ media(
         </div>
 
         <div class="pad panel">
-          <div class="footer">docs.muonnoi.org · Architecture · No tracking · Minimal dependencies</div>
+          <div class="footer">docs.muonnoi.org , Architecture , No tracking , Minimal dependencies</div>
         </div>
       </section>
     </div>
